@@ -1,0 +1,202 @@
+//U prilogu se nalazi deo JavaScript koda zavrsnog rada, kviza po uzoru na emisiju "Milioner".
+
+//function that resets all necessary variables if the game is restarted
+function startGame() {
+    openGoogleButton.style.pointerEvents = "auto"
+    halfChoiceButton.classList.remove("disabled")
+    changeQuestionButton.classList.remove("disabled")
+    openGoogleButton.classList.remove("disabled")
+    score = 14
+    time1 = 21
+    startTimer()
+    Array.from(awards).forEach(awd => awd.classList.remove('active'));
+    Array.from(awards)[14].classList.add('active')
+    wrongAnswer.classList.add('hide')
+    startButton.classList.add('hide')
+    startText.classList.add('hide')
+    tryAgain.classList.add('hide')
+    gameWinner.classList.add('hide')
+    gameContainer.classList.remove('hide')
+    shuffledQuestions = questions.sort(() => Math.random() - .5)
+    currentQuestionIndex = 0
+    setNextQuestion()
+}
+
+
+//function that asks the next question
+function setNextQuestion() {
+    if (changeQuestionClicked) {
+        changeQuestionButton.style.pointerEvents = "none";
+    } else {
+        changeQuestionButton.style.pointerEvents = "auto";
+    }
+    if (clicked) {
+        openGoogleButton.style.pointerEvents = "none"
+    } else {
+        openGoogleButton.style.pointerEvents = "auto"
+    }
+    if (halfChoiceButtonClicked) {
+        halfChoiceButton.style.pointerEvents = "none"
+    } else {
+        halfChoiceButton.style.pointerEvents = "auto"
+    }
+    time1 = 21
+    resetState()
+    showQuestion(shuffledQuestions[currentQuestionIndex])
+}
+
+//function that returns the selected answer
+function selectAnswer(e) {
+    if (clicked) {
+        closeIfr()
+    }
+    const selectedButton = e.target
+    const correct = selectedButton.dataset.correct
+    setTrueAndFalseAnswer(selectedButton, correct);
+    stopTimer()
+    //Bojenje tacnog i netacnih odgovora
+    Array.from(answersButtonsElement.children).forEach(button => {
+        setStatusClass(button, button.dataset.correct)
+    })
+}
+
+//Function that serves for manipulation depending on the correctness of the answer
+var win = false
+function setTrueAndFalseAnswer(element, correct) {
+    if (correct) {
+        stopTimer2()
+        googleText.classList.remove('hide')
+        timeSec.classList.add('hide')
+        tictac.pause()
+        correctAnswer.volume = 0.4
+        mute(correctAnswer)
+        mute(lose)
+        lose.pause()
+        textAnimations()
+        openGoogleButton.style.pointerEvents = "none"
+        changeQuestionButton.style.pointerEvents = "none"
+        halfChoiceButton.style.pointerEvents = "none"
+        //prelazak na sledece pitanje i povecavanje nagrade
+        setTimeout(function () {
+            currentQuestionIndex++
+            //helps unclickable until the next question appears
+            changeQuestionButton.style.pointerEvents = "auto"
+            openGoogleButton.style.pointerEvents = "auto"
+            halfChoiceButton.style.pointerEvents = "auto"
+            if (currentQuestionIndex == 16) {
+                win = true
+                stopTimer()
+                audioWhileAnswering.pause()
+                gameWinner.classList.remove('hide')
+                gameContainer.classList.add('hide')
+            } else {
+                win = false
+            }
+            if (win == false) {
+                setNextQuestion()
+            }
+            trueAnsw.classList.add('hide')
+            Array.from(awards).forEach(awd => awd.classList.remove('active'));
+            score--
+            awardGoUp(score, awards)
+            startTimer()
+        }, 1500);
+    } else {
+        openGoogleButton.style.pointerEvents = "none"
+        changeQuestionButton.style.pointerEvents = "none"
+        halfChoiceButton.style.pointerEvents = "none"
+        setTimeout(() => {
+            wrongAnswer.classList.remove('hide')
+            gameContainer.classList.add('hide')
+        }, 3000)
+        stopTimer2()
+        googleText.classList.remove('hide')
+        timeSec.classList.add('hide')
+        tictac.pause()
+    }
+}
+
+//Adding the ability for players to use google for 20 seconds
+const openGoogleButton = document.getElementById("google")
+openGoogleButton.addEventListener('click', openGoogle)
+var clicked = false
+function openGoogle() {
+    clicked = true
+    tictac.volume = 0.3
+    mute(tictac)
+    mute(click)
+    googleText.classList.add('hide')
+    timeSec.classList.remove('hide')
+    time2 = 21
+    stopTimer()
+    startTimer2()
+    openGoogleButton.style.pointerEvents = "none"
+    forIframe.innerHTML = '<iframe src="https://www.google.com/search?igu=1 " style="margin:0; padding:0; width:1150px; height:500px" id="_iframe" name="_iframe-"></iframe>'
+    forIframe.classList.add('forIframe')
+    setTimeout(() => {
+        ifr = document.getElementById('_iframe').classList.add('hide')
+        timesUp.volume = 0.1
+        tictac.pause()
+        forIframe.classList.remove('forIframe')
+    }, "21000")
+}
+
+//function that closes iframe
+function closeIfr() {
+    ifr = document.getElementById('_iframe').classList.add('hide')
+    forIframe.classList.remove('forIframe')
+    openGoogleButton.classList.add('disabled')
+}
+
+
+// Timer
+function timer() {
+    time1 = time1 - 1;
+    if (time1 < 21) {
+        time.innerHTML = time1
+    }
+    if (time1 < 1) {
+        stopTimer()
+        tryAgain.classList.remove('hide')
+        gameContainer.classList.add('hide')
+    }
+
+    if (time1 == 3 || time1 == 2 || time1 == 1) {
+        time.style.color = "red"
+    } else {
+        time.style.color = "#C87F00"
+    }
+}
+
+//Questions
+const questions = [
+    {
+        question: 'Car Dušan je zapamćen i kao:',
+        answers: [
+            { text: 'Dušan Silni', correct: true },
+            { text: 'Dušan Mudri', correct: false },
+            { text: 'Dušan Hrabri', correct: false },
+            { text: 'Dušan Nejaki', correct: false }
+        ]
+    },
+    {
+        question: 'Na prostoru koje današnje države se nalazio logor Aušvic',
+        answers: [
+            { text: 'Italije', correct: false },
+            { text: 'Austrije', correct: false },
+            { text: 'Češke', correct: false },
+            { text: 'Poljske', correct: true }
+        ]
+    },
+    {
+        question: 'Koje od ovih država su na obalama istog okeana?',
+        answers: [
+            { text: 'Brazil i Peru', correct: false },
+            { text: 'Španija i Peru', correct: false },
+            { text: 'Brazil i Francuska', correct: true },
+            { text: 'Indija i Maroko', correct: false }
+        ]
+    },
+    .
+    .
+    .]

@@ -1,0 +1,63 @@
+table{
+	margin: 50px auto;	
+}
+
+table th{
+	padding: 10px ;
+	background-color: #d6d6d6;
+}
+
+table td{
+	border:  thin solid #d4d4d4;
+	text-align: center;
+    height: 70px;
+    
+}
+
+img{
+    width: 100%;
+    height: 100%;
+}
+
+ /* duration <= 60s */
+.shorter{
+    background-color: lightgreen;
+}
+ /* 60s <duration< 120s */
+.middle{
+    background-color: rgb(11, 139, 11);
+}
+ /* duration > 120s */
+.longest{
+    background-color: rgb(42, 107, 42);
+}
+
+.hide{
+    display: none;
+}
+
+.functions{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inputs-bck{
+    background-color: lightgreen;
+    border-radius: 25px;  
+}
+
+.inputs{
+    margin: 10px;
+    text-align: center;
+}
+
+.search{
+    width: 130px;
+    text-align: center;
+}
+
+.number{
+    width: 130px;
+    text-align: center;
+}
